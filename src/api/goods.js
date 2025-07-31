@@ -1,0 +1,71 @@
+import axios from 'axios';
+
+export async function fetchGoods(categoryId) {
+    const response = await axios.get(`http://laravelshop.loc/api/goods/${categoryId}`, {
+        headers: getAuthHeaders(),
+    });
+    return response.data;
+}
+
+function getAuthHeaders() {
+    const token = localStorage.getItem('token');
+    return token ? {Authorization: `Bearer ${token}`} : {};
+}
+
+export async function fetchCart(page = 1, userId = null) {
+    const id = userId || localStorage.getItem('user_id');
+    const response = await axios.get(`http://laravelshop.loc/api/cart/${id}?page=${page}`, {
+        headers: getAuthHeaders(),
+    });
+    return response.data;
+}
+
+export async function fetchAllCart(userId = null) {
+    const id = userId || localStorage.getItem('user_id');
+    const response = await axios.get(`http://laravelshop.loc/api/cart/all/${id}`, {
+        headers: getAuthHeaders(),
+    });
+    return response.data;
+}
+
+export async function removeFromCart(product_id) {
+    const response = await axios.delete(`http://laravelshop.loc/api/cart/${product_id}`, {
+        headers: getAuthHeaders(),
+    });
+    return response.data;
+}
+
+export function addToCart(productId) {
+    return axios.post(
+        'http://laravelshop.loc/api/cart',
+        {product_id: productId},
+        {headers: getAuthHeaders()}
+    ).then(response => response.data);
+}
+
+export async function create(formData) {
+    const response = await axios.post('http://laravelshop.loc/api/create', formData, {
+        headers: getAuthHeaders()
+    });
+    return response.data;
+}
+
+export async function change(id, formData) {
+    formData.append('_method', 'PUT');
+
+    const response = await axios.post(`http://laravelshop.loc/api/change/${id}`, formData, {
+        headers: getAuthHeaders(),
+    });
+    return response.data;
+}
+
+export async function clearAll() {
+    const response = await axios.post(
+        `http://laravelshop.loc/api/cart/clear`,
+        {},
+        {
+            headers: getAuthHeaders(),
+        }
+    );
+    return response.data;
+}
