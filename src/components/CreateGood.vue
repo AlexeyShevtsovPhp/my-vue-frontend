@@ -134,12 +134,15 @@ export default {
     },
 
     async loadGoods() {
-      if (!this.selectedCategoryId) {
-        this.goods = await fetchGoods(1);
-      } else {
-        this.goods = await fetchGoods(this.selectedCategoryId);
-      }
+      const response = await fetchGoods(this.selectedCategoryId || 1);
+      this.goods = response.goods ?? [];
+
       if (this.goods.length > 0) {
+        this.selectedGoodId = this.goods[0].id;
+      } else {
+        this.selectedGoodId = null;
+      }
+    if (this.goods.length > 0) {
         this.selectedGoodId = this.goods[0].id;
       }
     },
