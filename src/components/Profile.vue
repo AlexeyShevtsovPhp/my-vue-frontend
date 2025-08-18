@@ -1,17 +1,21 @@
 <script>
 
-import {fetchComments} from "../api/comments.js";
-import {fetchCart} from "../api/goods.js";
-import {loadUserInfo} from "../api/user.js";
+import {loadUserCart} from "../api/goods.js";
+import {loadUserComments} from "../api/user.js";
 
 export default {
   data() {
     return {
       liked: [],
-      allGoods:[],
+
+      allGoods: 0,
+      totalCommentsCount: 0,
 
       comments: [],
+
       cartItems: [],
+      totalPrice: 0,
+      likedGoods: [],
 
       username: localStorage.getItem('username') || 'Гость',
       role: localStorage.getItem('role') || null,
@@ -21,6 +25,7 @@ export default {
       currentGoodsPage: 1,
 
       totalCommentsPages: 1,
+      totalGoodsPages: 1,
       totalGoodsCount: 0,
 
       isUserInfoLoaded: false,
@@ -30,59 +35,52 @@ export default {
   },
   methods: {
 
-    async loadUserInfoFromServer() {
-      const response = await loadUserInfo(this.user_id);
-      console.log('User info response:', response);
+    async loadUserCommentsFromServer(page = 1) {
+      const response = await loadUserComments(this.user_id, page);
       if (response.success) {
-        this.totalCommentsPages = response.comments.meta.last_page;
-        this.totalCommentsCount = response.comments.meta.total;
-        this.totalPrice = response.goods.totalSum;
-        this.liked = response.goods.liked_ids;
-        this.allGoods = response.goods.allGoods;
-        this.totalGoodsPages = response.goods.meta.last_page;
-        this.totalGoodsCount = response.goods.meta.total;
+        this.totalCommentsPages = response.user.comments.meta.last_page;
+        this.comments = response.user.comments.data;
+        this.allGoods = response.user.comments.cart_items_count;
         this.username = response.user.name;
         this.role = response.user.role;
       }
       this.isUserInfoLoaded = true;
     },
 
-    async loadCart(page = this.currentGoodsPage) {
-      this.currentGoodsPage = page;
-      const data = await fetchCart(page, this.user_id);
-      this.cartItems = data.items || [];
-    },
-
-    async loadComments() {
-      const response = await fetchComments({
-        user_id: this.user_id,
-        page: this.currentCommentsPage,
-      });
-      this.comments = response.comments;
+    async loadUserCartFromServer(page = 1) {
+      const response = await loadUserCart(this.user_id, page);
+      if (response.success) {
+        this.totalGoodsPages = response.user.goods.meta.last_page;
+        this.totalGoodsCount = response.user.goods.meta.total;
+        this.cartItems = response.user.goods.data.cart;
+        this.totalPrice = response.user.total_sum;
+        this.totalCommentsCount = response.user.comments_count;
+        this.likedGoods = response.user.goods.data.liked;
+        this.username = response.user.name;
+        this.role = response.user.role;
+      }
+      this.isUserInfoLoaded = true;
     },
 
     goToCommentPage(page) {
       if (page < 1 || page > this.totalCommentsPages) return;
       this.currentCommentsPage = page;
-      this.loadComments();
+      this.loadUserCommentsFromServer(page);
     },
 
     goToCartPage(page) {
       if (page < 1 || page > this.totalGoodsPages) return;
       this.currentGoodsPage = page;
-      this.loadCart();
-
+      this.loadUserCartFromServer(page);
     },
 
-    userCart() {
+    userCart(page = 1) {
       this.isComments = false;
-      this.loadUserInfoFromServer();
-      this.loadCart();
+      this.loadUserCartFromServer(page);
     },
 
     userInfo() {
       this.isComments = true;
-      this.loadComments();
     },
 
     categories() {
@@ -99,12 +97,9 @@ export default {
       return good ? good.name : 'Неизвестный товар';
     },
 
-
   },
   mounted() {
-    this.loadUserInfoFromServer();
-    this.loadComments();
-    this.loadCart();
+    this.loadUserCommentsFromServer();
   },
 
   computed: {
@@ -155,9 +150,9 @@ export default {
               id="goodsButton"
               href="/logout"
               class="logout-style"
-              @click.prevent="userCart"
+              @click.prevent="() => userCart(1)"
           >
-            Товары({{ totalGoodsCount }})
+            Товары({{ allGoods }})
           </a>
         </div>
 
@@ -223,8 +218,8 @@ export default {
         <div class="liked-list-container">
           <h3 class="like-list-title">Избранные товары</h3>
           <div class="like-list">
-            <div v-for="likeId in liked" :key="likeId" class="like-item">
-              {{ getGoodNameById(likeId) }}
+            <div v-for="good in likedGoods" :key="good.id" class="like-item">
+              {{ good.name }}
             </div>
           </div>
         </div>
@@ -476,13 +471,13 @@ button:hover {
 }
 
 #goodsButton {
-  margin-left: 1168px;
+  margin-left: 1161px;
   margin-bottom: -50px;
   margin-top: -680px;
 }
 
 #commentsButton {
-  margin-left: 1125px;
+  margin-left: 1117px;
   margin-top: -6px;
 }
 

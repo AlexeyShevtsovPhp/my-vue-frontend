@@ -112,8 +112,8 @@ export default {
         category_id: this.selectedCategoryId,
         page: this.currentPage,
       })
-      this.comments = response.comments;
-      this.totalPages = response.meta.total_pages;
+      this.comments = response.data;
+      this.totalPages = response.meta.last_page;
     },
     async loadGoods() {
       if (!this.selectedCategoryId) {
@@ -873,6 +873,7 @@ table#usersComments td.action-column {
   margin-top: -297px;
   border-radius: 30px;
   width: 520px;
+  z-index: 1000;
   background: white;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
@@ -972,7 +973,7 @@ a {
 
 #search {
   margin-top: 15px;
-  margin-left: 8px;
+  margin-left: 9px;
   width: 300px;
   position: relative;
   font-family: 'Roboto', sans-serif;

@@ -16,9 +16,9 @@ async function submitForm() {
     setTimeout(() => (showError.value = false), 3000);
     return;
   }
-  console.log('Submitting form with', form.value.name, form.value.password);
+
   const response = await login(form.value.name, form.value.password);
-  console.log('Response from login:', response);
+
   if (response.success) {
     window.location.href = '/categories';
   } else {

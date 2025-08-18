@@ -84,6 +84,33 @@ export async function loadUserInfo(userId) {
     }
 }
 
+export async function loadUserComments(userId, page = 1) {
+    const token = localStorage.getItem('token');
+
+    const response = await fetch(`http://laravelshop.loc/api/users/${userId}?page=${page}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json',
+        },
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+        return {
+            success: true,
+            user: data.user,
+            comments: data.comments,
+            goods: data.goods,
+        };
+    } else {
+        return {
+            success: false,
+            message: data.message || 'Ошибка при загрузке данных пользователя',
+        };
+    }
+}
+
 export async function deleteUser(user_id) {
     const response = await axios.delete(`http://laravelshop.loc/api/user/${user_id}`, {
         headers: getAuthHeaders(),
