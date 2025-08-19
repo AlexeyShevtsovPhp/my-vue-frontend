@@ -118,6 +118,13 @@ export async function deleteUser(user_id) {
     return response.data;
 }
 
+export async function userCategoryInfo(userId = null) {
+    const id = userId || localStorage.getItem('user_id');
+    const response = await axios.get(`http://laravelshop.loc/api/userCategoryInfo/${id}`, {
+        headers: getAuthHeaders(),
+    });
+    return response.data;
+}
 
 
 

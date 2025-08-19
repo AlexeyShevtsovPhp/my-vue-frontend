@@ -1,7 +1,7 @@
 <script>
 import {getCategories} from '../api/categories.js';
 import {createComment, deleteComment, fetchComments} from '../api/comments.js';
-import {addToCart, fetchGoods, fetchCart} from '../api/goods.js';
+import {addToCart, fetchGoods} from '../api/goods.js';
 import {searchAddresses} from '../api/radar.js';
 import {toggleLike} from '../api/likes.js';
 import {listenCartUpdates} from '../plugins/echoCart'
@@ -9,6 +9,7 @@ import {listenChatUpdates} from '../plugins/echoChat'
 import {listenChatDelete} from '../plugins/echoDelete';
 
 import echo from '../plugins/echo.js'
+import {userCategoryInfo} from "../api/user.js";
 
 
 export default {
@@ -47,6 +48,7 @@ export default {
       username: localStorage.getItem('username') || 'Гость',
       role: localStorage.getItem('role') || null,
       email: localStorage.getItem('email'),
+      user_id: localStorage.getItem('user_id'),
 
       query: '',
       suggestions: [],
@@ -82,10 +84,11 @@ export default {
       console.log('Выбран адрес:', address);
     },
 
-    async loadCart(page = this.currentPage) {
-      const data = await fetchCart(page);
+    async loadCart(user_id) {
 
-      this.totalItems = data.totalItems;
+      const data = await userCategoryInfo(user_id);
+
+      this.totalItems = data.info.goods_count;
     },
 
     selectCategory(category) {

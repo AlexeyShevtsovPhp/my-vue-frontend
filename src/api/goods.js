@@ -12,22 +12,13 @@ function getAuthHeaders() {
     return token ? {Authorization: `Bearer ${token}`} : {};
 }
 
-export async function fetchCart(page = 1, userId = null) {
+export async function fetchCartPage(page = 1, userId = null) {
     const id = userId || localStorage.getItem('user_id');
-    const response = await axios.get(`http://laravelshop.loc/api/cart/${id}?page=${page}`, {
+    const response = await axios.get(`http://laravelshop.loc/api/cartPage/${id}?page=${page}`, {
         headers: getAuthHeaders(),
     });
     return response.data;
 }
-
-export async function fetchAllCart(userId = null) {
-    const id = userId || localStorage.getItem('user_id');
-    const response = await axios.get(`http://laravelshop.loc/api/cart/all/${id}`, {
-        headers: getAuthHeaders(),
-    });
-    return response.data;
-}
-
 export async function removeFromCart(product_id) {
     const response = await axios.delete(`http://laravelshop.loc/api/cart/${product_id}`, {
         headers: getAuthHeaders(),

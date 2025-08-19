@@ -1,5 +1,5 @@
 <script>
-import {fetchCart, fetchAllCart, removeFromCart, clearAll} from '../api/goods.js';
+import {removeFromCart, clearAll, fetchCartPage} from '../api/goods.js';
 import {buy} from "../api/purchase.js";
 
 export default {
@@ -26,11 +26,11 @@ export default {
   },
   methods: {
     async loadCart(page = this.currentPage) {
-      const data = await fetchCart(page);
+      const data = await fetchCartPage(page);
 
-      this.cartItems = data.items;
-      this.totalPrice = data.totalSum;
-      this.totalPages = data.lastPage || 1;
+      this.cartItems = data.goods.data.cart;
+      this.totalPrice = data.goods.data.total_sum;
+      this.totalPages = data.goods.meta.last_page || 1;
 
       if (this.cartItems.length === 0 && this.currentPage > 1) {
         this.currentPage--;
