@@ -192,7 +192,7 @@ export default {
           ? '/images/userIcon/guest.png'
           : '/images/userIcon/admin.png';
     },
-  }
+  },
 }
 
 </script>

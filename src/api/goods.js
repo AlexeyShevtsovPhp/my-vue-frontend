@@ -7,6 +7,12 @@ export async function fetchGoods(categoryId) {
     return response.data;
 }
 
+export async function fetchGoodInfo(goodId) {
+    const response = await axios.get(`http://laravelshop.loc/api/goodInfo/${goodId}`, {
+        headers: getAuthHeaders(),
+    });
+    return response.data;
+}
 function getAuthHeaders() {
     const token = localStorage.getItem('token');
     return token ? {Authorization: `Bearer ${token}`} : {};

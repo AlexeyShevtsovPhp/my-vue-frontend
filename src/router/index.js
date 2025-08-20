@@ -7,6 +7,7 @@ import Cart from "../components/Cart.vue";
 import UserList from "../components/UserList.vue";
 import CreateGood from "../components/CreateGood.vue";
 import Email from "../components/Email.vue";
+import ItemPage from "../components/ItemPage.vue";
 
 const routes = [
     { path: '/login', component: Login },
@@ -38,6 +39,13 @@ const routes = [
         path: '/create',
         component: CreateGood,
         meta: { requiresAuth: true, requiresAdmin: true, title: 'Создать товар' }
+    },
+
+    {
+        path: '/detail/:id',
+        name: 'GoodDetail',
+        component: ItemPage,
+        meta: { requiresAuth: true, requiresAdmin: true, title: 'Товар' }
     },
 
     {

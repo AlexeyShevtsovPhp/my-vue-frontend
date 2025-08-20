@@ -147,6 +147,11 @@ export default {
     profile() {
       this.$router.push('/profile');
     },
+
+    goToGoodDetail(good) {
+      this.$router.push({ name: 'GoodDetail', params: { id: good.id } });
+    },
+
     userList() {
       this.$router.push('/users');
     },
@@ -401,6 +406,7 @@ export default {
             :key="good.id"
             @mouseenter="onHoverImage(good.image)"
             @mouseleave="onLeaveImage"
+            @click="goToGoodDetail(good)"
         >
           <div class="goods-list-cell goods-name">{{ good.name }}
             <img
@@ -1110,7 +1116,6 @@ label {
   transition: all 0.2s ease-in-out;
   padding: 5px;
   box-shadow: 1px 3px 6px rgba(0, 0, 0, 0.15);
-
 }
 
 .cart:hover {
