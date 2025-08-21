@@ -327,23 +327,30 @@ export default {
               <h3 class="like-list-title">Избранные товары</h3>
 
             <div class="like-list">
-            <div
-                class="liked-item"
-                v-for="good in likedGoods"
-                :key="good.id"
-            >
-              <span class="good-name">{{ good.name }}</span>
-              <img
-                  :src="heartSrc(good)"
-                  id="heart"
-                  class="heart-icon"
-                  @click="toggleLike(good)"
-                  style="cursor:pointer; margin-left:8px;"
-                  alt="Лайк"
-              />
+              <div
+                  v-if="likedGoods.length === 0"
+                  class="empty-message"
+              >
+                Пусто
+              </div>
+              <div
+                  v-else
+                  class="liked-item"
+                  v-for="good in likedGoods"
+                  :key="good.id"
+              >
+                <span class="good-name">{{ good.name }}</span>
+                <img
+                    :src="heartSrc(good)"
+                    id="heart"
+                    class="heart-icon"
+                    @click="toggleLike(good)"
+                    style="cursor:pointer; margin-left:8px;"
+                    alt="Лайк"
+                />
+              </div>
             </div>
-            <p v-if="likedGoods.length === 0" class="empty-message">Пусто</p>
-          </div>
+
           </div>
 
           <div class="likeExit">
@@ -414,6 +421,7 @@ export default {
 
 .empty-message {
   text-align: center;
+  font-size: 1.2em;
   padding: 20px;
   color: #888;
   font-style: italic;

@@ -205,7 +205,7 @@ export default {
         setTimeout(() => (this.showError = false), 3000);
         return;
       }
-      const response = await createComment({
+      await createComment({
         category_id: this.selectedCategoryId,
         comment: this.commentText
       });
@@ -805,7 +805,7 @@ textarea:focus {
   margin-top: -35px;
   padding-bottom: -50px;
   font-size: 36px;
-  font-family: Lora;
+  font-family: Lora,serif;
 }
 
 .comments-table th, .comments-table td {
