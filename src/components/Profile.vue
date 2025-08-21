@@ -2,6 +2,7 @@
 
 import {loadUserCart} from "../api/goods.js";
 import {loadUserComments} from "../api/user.js";
+import {toggleLike} from "../api/likes.js";
 
 export default {
   data() {
@@ -10,6 +11,7 @@ export default {
 
       allGoods: 0,
       totalCommentsCount: 0,
+      totalLikesCount: 0,
 
       comments: [],
 
@@ -31,6 +33,7 @@ export default {
       isUserInfoLoaded: false,
 
       isComments: true,
+      isLikesPage: false,
     }
   },
   methods: {
@@ -39,6 +42,7 @@ export default {
       const response = await loadUserComments(this.user_id, page);
       if (response.success) {
         this.totalCommentsPages = response.user.comments.meta.last_page;
+        this.totalGoodsCount = response.user.comments.cart_items_count;
         this.comments = response.user.comments.data;
         this.allGoods = response.user.comments.cart_items_count;
         this.username = response.user.name;
@@ -51,11 +55,14 @@ export default {
       const response = await loadUserCart(this.user_id, page);
       if (response.success) {
         this.totalGoodsPages = response.user.goods.meta.last_page;
-        this.totalGoodsCount = response.user.goods.meta.total;
         this.cartItems = response.user.goods.data.cart;
         this.totalPrice = response.user.total_sum;
         this.totalCommentsCount = response.user.comments_count;
-        this.likedGoods = response.user.goods.data.liked;
+        this.totalLikesCount = response.user.goods.data.likes_count;
+        this.likedGoods = response.user.goods.data.liked.map(good => ({
+          ...good,
+          liked: true
+        }));
         this.username = response.user.name;
         this.role = response.user.role;
       }
@@ -81,6 +88,21 @@ export default {
 
     userInfo() {
       this.isComments = true;
+      this.isLikesPage = false;
+    },
+
+    backToCart() {
+      this.isLikesPage = false;
+    },
+
+    userLikesList() {
+      this.isLikesPage = true;
+    },
+
+    toggleLike(good) {
+      toggleLike(good.id).then(response => {
+        good.liked = response.liked;
+      });
     },
 
     categories() {
@@ -90,11 +112,6 @@ export default {
     logout() {
       localStorage.removeItem('token');
       this.$router.push('/login');
-    },
-
-    getGoodNameById(id) {
-      const good = this.allGoods.find(item => item.id === id);
-      return good ? good.name : 'Неизвестный товар';
     },
 
   },
@@ -109,6 +126,15 @@ export default {
     hasMoreGoodsPages() {
       return this.currentGoodsPage < this.totalGoodsPages;
     },
+
+    heartSrc() {
+      return (good) => {
+        return good.liked
+            ? '/images/interface/heart.png'
+            : '/images/interface/heartVoid.png';
+      }
+    },
+
     avatarSrc() {
       return this.role === 'guest'
           ? '/images/userIcon/guest.png'
@@ -152,7 +178,7 @@ export default {
               class="logout-style"
               @click.prevent="() => userCart(1)"
           >
-            Товары({{ allGoods }})
+            Товары({{ totalGoodsCount }})
           </a>
         </div>
 
@@ -204,6 +230,7 @@ export default {
 
     <div v-if="!isComments">
       <div v-if="isUserInfoLoaded">
+        <div class= "wrapper">
         <div class="logout">
           <a
               id="commentsButton"
@@ -214,16 +241,35 @@ export default {
             Комментарии({{ totalCommentsCount }})
           </a>
         </div>
+        </div>
 
-        <div class="liked-list-container">
-          <h3 class="like-list-title">Избранные товары</h3>
-          <div class="like-list">
-            <div v-for="good in likedGoods" :key="good.id" class="like-item">
-              {{ good.name }}
-            </div>
+        <div v-if="!isLikesPage">
+        <div class="logout">
+          <a
+              id="favorite"
+              href="/profile"
+              class="logout-style"
+              @click.prevent="userLikesList"
+          >
+            Избранные товары({{ totalLikesCount }})
+          </a>
+        </div>
+        </div>
+
+        <div v-if="isLikesPage">
+          <div class="logout">
+            <a
+                id="justCart"
+                href="/profile"
+                class="logout-style"
+                @click.prevent="backToCart"
+            >
+              Товары({{ totalGoodsCount }})
+            </a>
           </div>
         </div>
 
+        <div v-if="!isLikesPage">
         <table class="comments-table" id="usersComments" style="margin-top: 10px;">
           <thead>
           <tr>
@@ -244,76 +290,166 @@ export default {
           </tbody>
         </table>
 
-        <div class="button-container">
-          <button
-              :class="{ disabled: currentGoodsPage === 1 }"
-              class="previous-page"
-              @click="goToCartPage(currentGoodsPage - 1)"
-          >
-            <img src="/images/interface/back.png" alt="Назад" class="left-arrow" />
-          </button>
+          <div class="button-container">
+            <button
+                :class="{ disabled: currentGoodsPage === 1 }"
+                class="previous-page"
+                @click="goToCartPage(currentGoodsPage - 1)"
+            >
+              <img src="/images/interface/back.png" alt="Назад" class="left-arrow" />
+            </button>
 
-          <button
-              :class="{ disabled: !hasMoreGoodsPages }"
-              class="next-page"
-              @click="goToCartPage(currentGoodsPage + 1)"
-          >
-            <img
-                src="/images/interface/back.png"
-                alt="Вперёд"
-                class="right-arrow"
-                style="transform: scaleX(-1)"
-            />
-          </button>
+            <button
+                :class="{ disabled: !hasMoreGoodsPages }"
+                class="next-page"
+                @click="goToCartPage(currentGoodsPage + 1)"
+            >
+              <img
+                  src="/images/interface/back.png"
+                  alt="Вперёд"
+                  class="right-arrow"
+                  style="transform: scaleX(-1)"
+              />
+            </button>
+          </div>
+          <label>Итог: {{ totalPrice }} ₽</label>
+
+          <a href='/logout'>
+            <button class="exitButton" @click.prevent="logout">Выйти</button>
+          </a>
+
+        </div>
+      </div>
+    </div>
+
+        <div v-if="isLikesPage">
+          <div class="liked-vertical-container">
+              <h3 class="like-list-title">Избранные товары</h3>
+
+            <div class="like-list">
+            <div
+                class="liked-item"
+                v-for="good in likedGoods"
+                :key="good.id"
+            >
+              <span class="good-name">{{ good.name }}</span>
+              <img
+                  :src="heartSrc(good)"
+                  id="heart"
+                  class="heart-icon"
+                  @click="toggleLike(good)"
+                  style="cursor:pointer; margin-left:8px;"
+                  alt="Лайк"
+              />
+            </div>
+            <p v-if="likedGoods.length === 0" class="empty-message">Пусто</p>
+          </div>
+          </div>
+
+          <div class="likeExit">
+          <a href='/logout'>
+            <button class="exitButton" @click.prevent="logout">Выйти</button>
+          </a>
+          </div>
         </div>
 
-        <a href='/logout'>
-          <button class="exitButton" @click.prevent="logout">Выйти</button>
-        </a>
-
-      </div>
-      <label>Итог: {{ totalPrice }} ₽</label>
-    </div>
   </div>
 </template>
 
 <style scoped>
 
-.liked-list-container{
-  width: 280px;
-  position: absolute;
-  height: 278px;
-  margin-left: 1265px;
-  margin-top: 8px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
+.liked-vertical-container {
+  width: 650px;
+  max-height: 280px;
+  padding: 0;
   background-color: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  font-family: Arial, sans-serif;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+  margin-left: 604px;
+  margin-top: 10px;
 }
 
-.like-list{
-  padding: 10px;
-  max-height: 213px;
-  overflow-y: auto;
+.liked-vertical-container::-webkit-scrollbar {
+  width: 8px;
 }
 
-.like-item {
-  padding: 14px;
-  cursor: pointer;
+.liked-vertical-container::-webkit-scrollbar-thumb {
+  background-color: #bbb;
+  border-radius: 10px;
+}
+
+.liked-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 18px;
   border-bottom: 1px solid #eee;
+  font-family: 'Arial', sans-serif;
+  font-size: 1em;
   transition: background-color 0.2s ease;
 }
 
-.like-list-title{
+.liked-item:hover {
+  background-color: #f9f9f9;
+}
+
+.good-name {
+  flex: 1;
+}
+
+.heart-icon {
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.heart-icon:hover {
+  transform: scale(1.2);
+  opacity: 0.7;
+}
+
+.empty-message {
   text-align: center;
+  padding: 20px;
+  color: #888;
+  font-style: italic;
+}
+
+#justCart {
+  position: absolute;
+  margin-top: -34px;
+  margin-left: 1015px;
+}
+
+.like-list {
+  overflow-y: auto;
+  flex-grow: 1;
+  max-height: 245px;
+  scrollbar-width: thin;
+  scrollbar-color: #ccc transparent;
+}
+
+.like-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.like-list::-webkit-scrollbar-thumb {
+  background-color: #bbb;
+  border-radius: 10px;
+}
+
+.like-list-title{
   background-color: #34495e;
-  color: white;
-  padding: 12px;
+  color: #ffffff;
+  padding: 14px 20px;
   margin: 0;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  font-size: 1.1em;
+  font-size: 1em;
+  text-transform: uppercase;
+  font-family: 'Arial', sans-serif;
 }
 
 #goodsButton {
@@ -476,9 +612,15 @@ button:hover {
   margin-top: -680px;
 }
 
-#commentsButton {
+#commentsButton{
   margin-left: 1117px;
   margin-top: -6px;
+}
+
+#favorite {
+  margin-left: 935px;
+  margin-top: -34px;
+  position: absolute;
 }
 
 .comments-table td:nth-child(2),
@@ -489,7 +631,7 @@ button:hover {
 }
 
 label {
-  margin-top: -110px;
+  margin-top: -45px;
   margin-left: 708px;
   position: absolute;
   padding: 15px 20px;
@@ -500,6 +642,10 @@ label {
   color: #333;
   width: fit-content;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.likeExit {
+  margin-top: 56px;
 }
 
 </style>

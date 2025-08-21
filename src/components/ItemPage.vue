@@ -1,6 +1,5 @@
 <script>
 import {addToCart, fetchGoodInfo} from '../api/goods.js';
-import {buy} from "../api/purchase.js";
 import {listenCartUpdates} from "../plugins/echoCart.js";
 import {userCategoryInfo} from "../api/user.js";
 
@@ -72,7 +71,6 @@ export default {
 
       this.totalItems = data.info.goods_count;
     },
-
   },
 
   mounted() {

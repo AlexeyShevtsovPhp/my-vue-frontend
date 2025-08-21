@@ -147,11 +147,9 @@ export default {
     profile() {
       this.$router.push('/profile');
     },
-
     goToGoodDetail(good) {
       this.$router.push({ name: 'GoodDetail', params: { id: good.id } });
     },
-
     userList() {
       this.$router.push('/users');
     },
@@ -196,6 +194,10 @@ export default {
           });
     },
 
+    goToUserPage(userId) {
+      this.$router.push({ name: 'UserProfile', params: { id: userId } });
+    },
+
     async submitComment() {
       if (!this.commentText.trim()) {
         this.showError = true;
@@ -225,7 +227,7 @@ export default {
       this.cartCount = data.totalQuantity;
     });
 
-    this.loadCart();
+    this.loadCart(userId);
 
     echo.channel('chat').listen('.message.sent', (e) => {
       console.log('Получено событие:', e);
@@ -412,7 +414,7 @@ export default {
             <img
                 :src="heartSrc(good)"
                 id="heart"
-                @click="toggleLike(good)"
+                @click.stop="toggleLike(good)"
                 style="cursor:pointer; margin-left:8px;"
                 alt="Лайк"
             />
@@ -453,7 +455,19 @@ export default {
         </thead>
         <tbody>
         <tr v-for="comment in comments" :key="comment.id">
-          <td>{{ comment.username }}</td>
+          <td>
+
+            <span
+            v-if="role === 'admin'"
+            class="username-link"
+            @click="goToUserPage(comment.user_id)">
+            {{ comment.username }}
+            </span>
+            <span v-else>
+            {{ comment.username }}
+            </span>
+
+          </td>
           <td>{{ comment.content }}</td>
           <td class="action-column">
             <button class="small-comment-button" @click="deleteCommentHandler(comment.id)">-</button>
@@ -535,6 +549,16 @@ export default {
 .disabled-submit {
   background-color: #898e8d;
   pointer-events: none;
+}
+
+.username-link {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.username-link:hover {
+  transform: scale(1.05);
+  color: #0056b3;
 }
 
 .goods-list {

@@ -49,6 +49,12 @@ const routes = [
     },
 
     {
+        path: '/users/:id',
+        name: 'UserProfile',
+        component: UserList,
+    },
+
+    {
         path: '/email',
         component: Email,
         meta: { requiresAuth: true, title: 'Почта' }

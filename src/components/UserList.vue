@@ -40,7 +40,7 @@ export default {
       if (response.success) {
         this.totalCommentsPages = response.user.comments.meta.last_page;
         this.comments = response.user.comments.data;
-        this.allGoods = response.user.comments.cart_items_count;
+        this.totalGoodsCount = response.user.comments.cart_items_count;
         this.user_id = response.user.id
         this.username = response.user.name;
         this.role = response.user.role;
@@ -145,6 +145,11 @@ export default {
     this.user_id = this.$route.params.id || 1;
     this.fetchUsers(this.currentUserPage);
     this.loadUserCommentsFromServer();
+
+    if (this.$route.query.userId) {
+      this.loadUserComments(this.$route.query.userId);
+    }
+
   },
 };
 </script>
@@ -201,7 +206,7 @@ export default {
             class="logout-style"
             @click.prevent="userCart"
         >
-          Товары({{ allGoods }})
+          Товары({{ totalGoodsCount }})
         </a>
       </div>
 
@@ -327,8 +332,8 @@ export default {
 }
 
 label {
-  margin-top: -44px;
-  margin-left: 805px;
+  margin-top: -110px;
+  margin-left: 800px;
   position: fixed;
   padding: 15px 20px;
   background-color: #f5f5f5;
@@ -459,12 +464,6 @@ button:hover {
 .disabled {
   background-color: #898e8d;
   pointer-events: none;
-}
-
-.exitButton-disabled {
-  background-color: #898e8d;
-  pointer-events: none;
-  margin-left: 950px;
 }
 
 p {
