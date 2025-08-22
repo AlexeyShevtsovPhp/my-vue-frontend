@@ -1,11 +1,14 @@
 <script>
-import {addToCart, fetchGoodInfo} from '../api/goods.js';
+import {addToCart, fetchGoodInfo, sendRating } from '../api/goods.js';
 import {listenCartUpdates} from "../plugins/echoCart.js";
 import {userCategoryInfo} from "../api/user.js";
 
 export default {
   data() {
     return {
+
+      selectedRating: 0,
+      hoverRating: 0,
 
       cartCount: 0,
       totalItems: 0,
@@ -47,10 +50,35 @@ export default {
     async loadInfo() {
       const response = await fetchGoodInfo(this.goodId);
       this.goodInfo = response.item;
+
+      this.selectedRating = this.goodInfo.user_rating || 0;
+
+      this.hoverRating = this.selectedRating;
+
     },
 
     cart() {
       this.$router.push('/cart');
+    },
+
+    highlightStars(rating) {
+      this.hoverRating = rating;
+    },
+
+    async setRating(rating) {
+      this.selectedRating = rating;
+
+      const data = await sendRating(this.goodId, this.userId, rating);
+
+      if (data.success) {
+        this.notificationText = 'Оценка товара была успешно сохранена';
+        this.showNotification = true;
+        setTimeout(() => (this.showNotification = false), 3000);
+      } else {
+        this.errorMessage = data.message || 'Ошибка при сохранении рейтинга';
+        this.showError = true;
+        setTimeout(() => (this.showError = false), 3000);
+      }
     },
 
     addToCart(productId) {
@@ -146,6 +174,35 @@ export default {
     </div>
   </div>
 
+  <div class="average-rating">
+    <span class="label">Средний рейтинг товара:</span>
+    <div class="stars">
+      <img
+          v-for="star in 5"
+          :key="'avg-' + star"
+          :src="star <= Math.round(goodInfo.average_rating) ? '/images/interface/star.png' : '/images/interface/starVoid.png'"
+          class="star"
+          alt="star"
+      />
+    </div>
+    <span class="rating-value">({{ Number(goodInfo.average_rating).toFixed(1) }})</span>
+  </div>
+
+
+  <div class="rating-stars">
+    <img
+        v-for="star in 5"
+        :key="star"
+        :src="star <= (hoverRating || selectedRating) ? '/images/interface/star.png' : '/images/interface/starVoid.png'"
+        class="star"
+        :data-value="star"
+        @mouseover="highlightStars(star)"
+        @mouseout="highlightStars(selectedRating)"
+        @click="setRating(star)"
+        alt="star"
+    />
+  </div>
+
   <div class="button-wrapper">
   <button class="add-to-cart-btn" @click="addToCart(goodInfo.id)">
     🛒 Добавить в корзину
@@ -182,6 +239,59 @@ export default {
   height: 38px;
   transition: transform 0.3s ease, filter 0.3s ease;
   object-fit: contain;
+}
+
+.star {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+.star.hover,
+.star.selected {
+  filter: brightness(1.5);
+}
+
+.rating-stars {
+  position: absolute;
+  margin-left: 520px;
+  margin-top: -105px;
+}
+
+.average-rating {
+  position: absolute;
+  margin-top: 60px;
+  margin-left: 5px;
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #2c7a4b;
+  background-color: #e6f2e9;
+  padding: 8px 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(44, 122, 75, 0.2);
+  max-width: fit-content;
+}
+
+.average-rating .label {
+  margin-right: 10px;
+}
+
+.average-rating .stars {
+  display: flex;
+}
+
+.average-rating .star {
+  width: 24px;
+  height: 24px;
+  margin-right: 3px;
+}
+
+.average-rating .rating-value {
+  margin-left: 8px;
+  font-weight: 700;
+  color: #1e5c38;
 }
 
 .button-wrapper {

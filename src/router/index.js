@@ -45,7 +45,7 @@ const routes = [
         path: '/detail/:id',
         name: 'GoodDetail',
         component: ItemPage,
-        meta: { requiresAuth: true, requiresAdmin: true, title: 'Товар' }
+        meta: { requiresAuth: true, title: 'Товар' }
     },
 
     {

@@ -93,3 +93,17 @@ export async function loadUserCart(userId, page = 1) {
         };
     }
 }
+
+export async function sendRating(productId, userId, rating) {
+    const headers = getAuthHeaders();
+
+    const response = await axios.post(
+        'http://laravelshop.loc/api/rate',
+        { productId, userId, rating },
+        { headers }
+    );
+
+    return response.data;
+}
+
+

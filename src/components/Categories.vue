@@ -421,7 +421,7 @@ export default {
           </div>
           <div class="goods-list-cell goods-price">{{ good.price }}р</div>
           <div class="goods-list-cell goods-action">
-            <button class="small-button" @click="addToCart(good.id)">+</button>
+            <button class="small-button" @click.stop="addToCart(good.id)">+</button>
           </div>
         </div>
       </div>
