@@ -70,7 +70,7 @@ export default {
 
       const data = await sendRating(this.goodId, this.userId, rating);
 
-      if (data.success) {
+      if (data.status === 204) {
         this.notificationText = 'Оценка товара была успешно сохранена';
         this.showNotification = true;
         setTimeout(() => (this.showNotification = false), 3000);
@@ -134,7 +134,7 @@ export default {
 
   <div class="logout">
     <a href="/logout" class="logout-style" @click.prevent="categories">
-      <img src="/images/interface/back.png" alt="Выйти из аккаунта" class="logout-icon"/>
+      <img src="/images/back.png" alt="Выйти из аккаунта" class="logout-icon"/>
     </a>
   </div>
 

@@ -19,22 +19,27 @@ async function submitForm() {
   if (!form.value.name.trim() || !form.value.password.trim()) {
     showError.value = true
     setTimeout(() => (showError.value = false), 3000)
+    return;
   }
 
   const response = await registration(form.value.name, form.value.password);
 
-        if (response.success) {
-          showSuccess.value = true
-          form.value.name = ''
-          form.value.password = ''
-          setTimeout(() => (showSuccess.value = false), 3000)
-        } else if (response.message === "Ошибка валидации") {
-          showNameTaken.value = true
-          setTimeout(() => (showNameTaken.value = false), 3000)
-        } else {
-          showError.value = true
-          setTimeout(() => (showError.value = false), 3000)
-        }
+  if (response.success) {
+    // Успешная регистрация
+    showSuccess.value = true;
+    form.value.name = '';
+    form.value.password = '';
+    setTimeout(() => (showSuccess.value = false), 3000);
+  } else if (response.errors && response.errors.name) {
+    // Ошибка уникальности имени
+    showNameTaken.value = true;
+    setTimeout(() => (showNameTaken.value = false), 3000);
+  } else {
+    showError.value = true;
+    setTimeout(() => (showError.value = false), 3000);
+  }
+
+
       }
 
 </script>

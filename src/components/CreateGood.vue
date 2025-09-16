@@ -19,7 +19,7 @@ export default {
       },
 
       imageFile: null,
-      imageFileChange : null,
+      imageFileChange: null,
 
       selectedCategory: null,
       selectedCategoryId: null,
@@ -71,7 +71,7 @@ export default {
       }
       try {
         const response = await create(formData);
-        if (response.success) {
+        if (response.status === 201) {
           this.notificationTextCreate = 'Новый товар был успешно создан';
           this.showNotificationCreate = true;
           setTimeout(() => {
@@ -103,29 +103,23 @@ export default {
       if (this.imageFileChange) {
         formData.append('image', this.imageFileChange);
       }
-      try {
-        const response = await change(this.selectedGoodId, formData);
-        if (response.success) {
-          this.notificationTextChange = 'Товар был успешно изменен';
-          this.showNotificationChange = true;
-          setTimeout(() => {
-            this.showNotificationChange = false;
-          }, 3000);
 
-          await this.loadGoods();
-          this.productToChange.name = '';
-          this.productToChange.price = '';
-          this.imageFileChange = null;
-          this.$refs.imageInputChange.value = '';
-          }
-        }
-      catch (error) {
-        const errors = error.response.data.errors;
-        if (errors) {
-          this.errorMessageChange = Object.values(errors)[0][0];
-        } else {
-          this.errorMessageChange = 'Необходимо что-то изменить';
-        }
+      const response = await change(this.selectedGoodId, formData);
+      if (response.status === 201) {
+        this.notificationTextChange = 'Товар был успешно изменен';
+        this.showNotificationChange = true;
+        setTimeout(() => {
+          this.showNotificationChange = false;
+        }, 3000);
+
+        await this.loadGoods();
+        this.productToChange.name = '';
+        this.productToChange.price = '';
+        this.imageFileChange = null;
+        this.$refs.imageInputChange.value = '';
+      } else {
+        this.errorMessageChange = 'Необходимо что-то изменить';
+
         this.showErrorChange = true;
         setTimeout(() => {
           this.showErrorChange = false;
@@ -142,7 +136,7 @@ export default {
       } else {
         this.selectedGoodId = null;
       }
-    if (this.goods.length > 0) {
+      if (this.goods.length > 0) {
         this.selectedGoodId = this.goods[0].id;
       }
     },
@@ -199,7 +193,7 @@ export default {
 <template>
   <div class="logout">
     <a href="/logout" class="logout-style" @click.prevent="categoriesGo">
-      <img src="/images/interface/back.png" alt="Выйти из аккаунта" class="logout-icon"/>
+      <img src="/images/back.png" alt="Выйти из аккаунта" class="logout-icon"/>
     </a>
   </div>
 

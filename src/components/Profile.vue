@@ -149,7 +149,7 @@ export default {
 
     <div class="logout">
       <a href="/logout" class="logout-style" @click.prevent="categories">
-        <img src="/images/interface/back.png" alt="Выйти из аккаунта" class="logout-icon"/>
+        <img src="/images/back.png" alt="Выйти из аккаунта" class="logout-icon"/>
       </a>
     </div>
 
@@ -206,7 +206,7 @@ export default {
               class="previous-page"
               @click="goToCommentPage(currentCommentsPage - 1)"
           >
-            <img src="/images/interface/back.png" alt="Назад" class="left-arrow" />
+            <img src="/images/back.png" alt="Назад" class="left-arrow" />
           </button>
 
           <button
@@ -215,7 +215,7 @@ export default {
               @click="goToCommentPage(currentCommentsPage + 1)"
           >
             <img
-                src="/images/interface/back.png"
+                src="/images/back.png"
                 alt="Вперёд"
                 class="right-arrow"
                 style="transform: scaleX(-1)"
@@ -296,7 +296,7 @@ export default {
                 class="previous-page"
                 @click="goToCartPage(currentGoodsPage - 1)"
             >
-              <img src="/images/interface/back.png" alt="Назад" class="left-arrow" />
+              <img src="/images/back.png" alt="Назад" class="left-arrow" />
             </button>
 
             <button
@@ -305,7 +305,7 @@ export default {
                 @click="goToCartPage(currentGoodsPage + 1)"
             >
               <img
-                  src="/images/interface/back.png"
+                  src="/images/back.png"
                   alt="Вперёд"
                   class="right-arrow"
                   style="transform: scaleX(-1)"

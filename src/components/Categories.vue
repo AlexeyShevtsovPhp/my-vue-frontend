@@ -504,7 +504,7 @@ export default {
             :class="{ disabled: currentPage === 1 }"
             @click="goToPage(currentPage - 1)"
         >
-          <img src="/images/interface/back.png" alt="Назад" class="left-arrow"/>
+          <img src="/images/back.png" alt="Назад" class="left-arrow"/>
         </button>
 
         <button
@@ -512,7 +512,7 @@ export default {
             @click="goToPage(currentPage + 1)"
         >
           <img
-              src="/images/interface/back.png"
+              src="/images/back.png"
               alt="Вперёд"
               class="right-arrow"
               style="transform: scaleX(-1)"

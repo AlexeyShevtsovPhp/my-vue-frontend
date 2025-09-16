@@ -112,10 +112,9 @@ export async function loadUserComments(userId, page = 1) {
 }
 
 export async function deleteUser(user_id) {
-    const response = await axios.delete(`http://laravelshop.loc/api/user/${user_id}`, {
+    return await axios.delete(`http://laravelshop.loc/api/user/${user_id}`, {
         headers: getAuthHeaders(),
     });
-    return response.data;
 }
 
 export async function userCategoryInfo(userId = null) {

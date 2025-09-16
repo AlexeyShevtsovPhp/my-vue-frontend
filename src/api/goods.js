@@ -41,10 +41,9 @@ export function addToCart(productId) {
 }
 
 export async function create(formData) {
-    const response = await axios.post('http://laravelshop.loc/api/create', formData, {
+    return await axios.post('http://laravelshop.loc/api/create', formData, {
         headers: getAuthHeaders()
     });
-    return response.data;
 }
 
 export async function change(id, formData) {
@@ -53,7 +52,7 @@ export async function change(id, formData) {
     const response = await axios.post(`http://laravelshop.loc/api/change/${id}`, formData, {
         headers: getAuthHeaders(),
     });
-    return response.data;
+    return response;
 }
 
 export async function clearAll() {
@@ -97,13 +96,11 @@ export async function loadUserCart(userId, page = 1) {
 export async function sendRating(productId, userId, rating) {
     const headers = getAuthHeaders();
 
-    const response = await axios.post(
+    return await axios.post(
         'http://laravelshop.loc/api/rate',
-        { productId, userId, rating },
-        { headers }
+        {productId, userId, rating},
+        {headers}
     );
-
-    return response.data;
 }
 
 

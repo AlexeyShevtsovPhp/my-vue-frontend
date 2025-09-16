@@ -92,11 +92,11 @@ export default {
    async deleteUser() {
 
       const response = await deleteUser(this.user_id);
-      if(response.success) {
+      if(response.status === 204) {
         this.notificationText = "Пользователь был успешно удалён";
         this.showNotification = true;
         this.goToProfile(1)
-        this.fetchUsers(this.currentUserPage);
+        await this.fetchUsers(this.currentUserPage);
 
         setTimeout(() => {this.showNotification = false;}, 3000);}
       else {
@@ -112,7 +112,6 @@ export default {
       const result = await loadAllUsers(page);
       if (result.success) {
         this.users = result.users;
-        this.totalUserPages = result.meta.total_pages;
       }
     },
 
@@ -157,7 +156,7 @@ export default {
 <template>
   <div class="logout">
     <a href="/categories" class="logout-style" @click.prevent="categories">
-      <img src="/images/interface/back.png" alt="Выйти" class="logout-icon" />
+      <img src="/images/back.png" alt="Выйти" class="logout-icon" />
     </a>
   </div>
 
@@ -229,7 +228,7 @@ export default {
             class="previous-page"
             @click="goToCommentPage(currentCommentsPage - 1)"
         >
-          <img src="/images/interface/back.png" alt="Назад" class="left-arrow" />
+          <img src="/images/back.png" alt="Назад" class="left-arrow" />
         </button>
 
         <button
@@ -238,7 +237,7 @@ export default {
             @click="goToCommentPage(currentCommentsPage + 1)"
         >
           <img
-              src="/images/interface/back.png"
+              src="/images/back.png"
               alt="Вперёд"
               class="right-arrow"
               style="transform: scaleX(-1)"
@@ -295,7 +294,7 @@ export default {
             class="previous-page"
             @click="goToCartPage(currentGoodsPage - 1)"
         >
-          <img src="/images/interface/back.png" alt="Назад" class="left-arrow" />
+          <img src="/images/back.png" alt="Назад" class="left-arrow" />
         </button>
 
         <button
@@ -304,7 +303,7 @@ export default {
             @click="goToCartPage(currentGoodsPage + 1)"
         >
           <img
-              src="/images/interface/back.png"
+              src="/images/back.png"
               alt="Вперёд"
               class="right-arrow"
               style="transform: scaleX(-1)"

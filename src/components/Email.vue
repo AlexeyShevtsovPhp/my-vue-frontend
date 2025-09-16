@@ -73,7 +73,7 @@ export default {
 <template>
   <div class="logout">
     <a href="/logout" class="logout-style" @click.prevent="goToCategories">
-      <img src="/images/interface/back.png" alt="Выйти из аккаунта" class="logout-icon"/>
+      <img src="/images/back.png" alt="Выйти из аккаунта" class="logout-icon"/>
     </a>
   </div>
 
